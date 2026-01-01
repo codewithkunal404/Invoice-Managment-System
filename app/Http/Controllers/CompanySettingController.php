@@ -18,7 +18,7 @@ class CompanySettingController extends Controller
     {
         $request->validate([
             'name'    => 'required|string|max:255',
-            'logo'    => 'nullable|image|max:2048|accepted_formats:jpeg,jpg',
+            'logo'    => 'nullable|image|mimes:jpeg,jpg|max:2048',
             'address' => 'nullable|string',
             'state'   => 'nullable|string|max:255',
             'country' => 'nullable|string|max:255',
