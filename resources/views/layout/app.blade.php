@@ -3,169 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <title>Mini Invoice System</title>
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap CSS -->
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
+    <style>
+        #global-search { width: 220px; transition: .3s }
+        #global-search:focus { width: 320px }
+
+        #search-results {
+            position: absolute;
+            top: 100%;
+            z-index: 1050;
+            width: 420px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .search-module {
+            background: #f8f9fa;
+            font-weight: 600;
+            font-size: 13px;
+        }
+    </style>
 </head>
-<body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<body class="bg-light">
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
     <div class="container">
-        <a class="navbar-brand" href="{{ route('home') }}">
-            Invoice System
-        </a>
+        <a class="navbar-brand fw-bold" href="{{ route('home') }}">Invoice System</a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto align-items-center">
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-
-                <!-- Customers -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="customersMenu"
-                       role="button" data-bs-toggle="dropdown">
-                        Customers
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="customersMenu">
-                        <li><a class="dropdown-item" href="{{ route('customers.index') }}">Customer List</a></li>
-                        <li><a class="dropdown-item" href="{{ route('customers.create') }}">Add Customer</a></li>
-                    </ul>
+                <!-- GLOBAL SEARCH -->
+                <li class="nav-item position-relative me-3">
+                    <div class="input-group input-group-sm">
+                        <select id="search-type" class="form-select">
+                            <option value="all">All</option>
+                            @foreach(config('searchable') as $key => $v)
+                                <option value="{{ $key }}">{{ $key }}</option>
+                            @endforeach
+                        </select>
+                        <input id="global-search" type="text" class="form-control" placeholder="Search...">
+                    </div>
+                    <div id="search-results" class="list-group shadow"></div>
                 </li>
 
-                <!-- Items -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="itemsMenu"
-                       role="button" data-bs-toggle="dropdown">
-                        Items
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="itemsMenu">
-                        <li><a class="dropdown-item" href="{{ route('items.index') }}">Items List</a></li>
-                        <li><a class="dropdown-item" href="{{ route('items.create') }}">Add Item</a></li>
-                    </ul>
-                </li>
-
-                <!-- Invoices -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="invoicesMenu"
-                       role="button" data-bs-toggle="dropdown">
-                        Invoices
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="invoicesMenu">
-                        <li><a class="dropdown-item" href="{{ route('invoices.index') }}">Invoice List</a></li>
-                        <li><a class="dropdown-item" href="{{ route('invoices.create') }}">Add Invoice</a></li>
-                    </ul>
-                </li>
-
-                <!-- Taxes -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="taxMenu"
-                       role="button" data-bs-toggle="dropdown">
-                        Taxes
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="taxMenu">
-                        <li><a class="dropdown-item" href="{{ route('taxes.index') }}">Tax List</a></li>
-                        {{-- <li><a class="dropdown-item" href="{{ route('taxes.create') }}">Add Tax</a></li> --}}
-                    </ul>
-                </li>
-
-                <!-- Transactions -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="transactionsMenu"
-                       role="button" data-bs-toggle="dropdown">
-                        Transactions
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="transactionsMenu">
-                        <li><a class="dropdown-item" href="{{ route('transactions.index') }}">Transaction Details</a></li>
-                    </ul>
-                </li>
-
-                <!-- Activity Logs -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="logsMenu"
-                       role="button" data-bs-toggle="dropdown">
-                        Activity Logs
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="logsMenu">
-                        <li><a class="dropdown-item" href="{{ route('logs.errors') }}">View Error Logs</a></li>
-                        <li><a class="dropdown-item" href="{{ route('logs.activity') }}">View Activity Logs</a></li>
-                    </ul>
-                </li>
-
-                <!-- Configurations -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="configMenu"
-                       role="button" data-bs-toggle="dropdown">
-                        Configurations
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="configMenu">
-                        <li><a class="dropdown-item" href="{{ route('square.config.index') }}">Square</a></li>
-                        <li><a class="dropdown-item" href="{{ route('company.edit') }}">Company</a></li>
-                        <li><a class="dropdown-item" href="{{ route('email.edit') }}">Email</a></li>
-                        <li><a class="dropdown-item" href="{{ route('email-templates.index') }}">EmailTemplate</a></li>
-                        <li><a class="dropdown-item" href="{{ route('email-layouts.index') }}">EmailLayout</a></li>
-                        <li><a class="dropdown-item" href="{{ route('email.tinymce.edit') }}">TinyMCE</a></li>
-                    </ul>
-                </li>
+                <!-- MENUS (unchanged) -->
+                @include('partials.nav-menus')
 
             </ul>
         </div>
     </div>
 </nav>
 
-<main class="py-4">
+<!-- CONTENT -->
+<main class="container py-4">
     @yield('content')
 </main>
 
-<footer class="bg-light text-center py-3 mt-4">
-    <small>© {{ date('Y') }} Mini Invoice System | Powered by Laravel + Square</small>
+<!-- FOOTER -->
+<footer class="bg-white text-center py-3 border-top">
+    <small>© {{ date('Y') }} Mini Invoice System</small>
 </footer>
 
-
-<!-- TOAST CONTAINER -->
-<div class="toast-container position-fixed top-0 end-0 p-3">
-
-    {{-- Success Toast --}}
-    @if(session('success'))
-        <div class="toast align-items-center text-bg-success border-0 show" role="alert">
-            <div class="d-flex">
-                <div class="toast-body">
-                    ✅ {{ session('success') }}
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto"
-                        data-bs-dismiss="toast"></button>
-            </div>
-        </div>
-    @endif
-
-    {{-- Error Toast --}}
-    @if($errors->any())
-        <div class="toast align-items-center text-bg-danger border-0 show" role="alert">
-            <div class="d-flex">
-                <div class="toast-body">
-                    ❌ {{ $errors->first() }}
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto"
-                        data-bs-dismiss="toast"></button>
-            </div>
-        </div>
-    @endif
-
-</div>
-
+<!-- Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    document.querySelectorAll('.toast').forEach(toastEl => {
-        new bootstrap.Toast(toastEl, {
-            delay: 4000
-        }).show();
-    });
+const searchInput  = document.getElementById('global-search');
+const moduleSelect = document.getElementById('search-type'); // ✅ FIXED
+const resultsDiv   = document.getElementById('search-results');
+
+let timeout = null;
+
+searchInput.addEventListener('input', () => {
+    clearTimeout(timeout);
+
+    timeout = setTimeout(() => {
+        const q = searchInput.value.trim();
+        let module = moduleSelect.value;
+
+        // ✅ IMPORTANT FIX
+        if (module === 'all') module = '';
+
+        if (!q) {
+            resultsDiv.innerHTML = '';
+            return;
+        }
+
+        fetch(`/global-search?q=${encodeURIComponent(q)}&module=${module}`)
+            .then(res => res.json())
+            .then(data => {
+                resultsDiv.innerHTML = '';
+
+                if (!data.length) {
+                    resultsDiv.innerHTML =
+                        `<div class="list-group-item text-muted">No results found</div>`;
+                    return;
+                }
+
+                data.forEach(item => {
+                    const el = document.createElement('a');
+                    el.href = item.link;
+                    el.className = 'list-group-item list-group-item-action';
+                    el.innerHTML = `
+                        <div class="fw-semibold">${item.module}</div>
+                        <small class="text-muted">${item.text}</small>
+                    `;
+                    resultsDiv.appendChild(el);
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                resultsDiv.innerHTML =
+                    `<div class="list-group-item text-danger">Search error</div>`;
+            });
+
+    }, 300);
+});
 </script>
 
 </body>

@@ -4,8 +4,11 @@ use App\Http\Controllers\Activity;
 use App\Http\Controllers\CompanySettingController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ItemsController;
+use App\Http\Controllers\NotificationEventTemplateController;
 use App\Http\Controllers\SquareConfigController;
 use App\Http\Controllers\SquareWebhookController;
 use App\Http\Controllers\TaxController;
@@ -120,3 +123,29 @@ Route::delete('email-layout/{layout}', [EmailController::class, 'destroyLayout']
 // TinyMCE API Key Routes
 Route::get('email/tinymce/edit', [EmailController::class, 'editTinyMCE'])->name('email.tinymce.edit');
 Route::put('email/tinymce/update', [EmailController::class, 'updateTinyMCE'])->name('email.tinymce.update');
+
+// Event Routes
+Route::get('events', [EventController::class, 'index'])->name('notification-events.index');
+Route::get('events/create', [EventController::class, 'create'])->name('notification-events.create');
+Route::post('events', [EventController::class, 'store'])->name('notification-events.store');
+Route::get('events/{notificationEvent}/edit', [EventController::class, 'edit'])->name('notification-events.edit');
+Route::put('events/{notificationEvent}', [EventController::class, 'update'])->name('notification-events.update');
+Route::delete('events/{notificationEvent}', [EventController::class, 'destroy'])->name('notification-events.destroy');
+
+// Notification Event Template Mapping Routes
+Route::get('notification-event-templates', [NotificationEventTemplateController::class, 'index'])
+    ->name('notification-event-templates.index');
+Route::get('notification-event-templates/create', [NotificationEventTemplateController::class, 'create'])
+    ->name('notification-event-templates.create');
+Route::post('notification-event-templates', [NotificationEventTemplateController::class, 'store'])
+    ->name('notification-event-templates.store');
+Route::get('notification-event-templates/{notificationEventTemplate}/edit', [NotificationEventTemplateController::class, 'edit'])
+    ->name('notification-event-templates.edit');
+Route::put('notification-event-templates/{notificationEventTemplate}', [NotificationEventTemplateController::class, 'update'])
+    ->name('notification-event-templates.update');
+Route::delete('notification-event-templates/{notificationEventTemplate}', [NotificationEventTemplateController::class, 'destroy'])
+    ->name('notification-event-templates.destroy');
+
+
+Route::get('/global-search', [GlobalSearchController::class, 'search'])
+    ->name('global.search');

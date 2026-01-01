@@ -51,10 +51,22 @@
                             </div>
                         </div>
 
+
+                        <div class="col-md-6">
+                                <label class="form-label">Phone Code</label>
+                                <select name="phone_code" id="phone_code" class="form-control">
+                                    @foreach(fn_get_country_code() as $country)
+                                        <option value="{{ $country['dial_code'] }}"
+                                            {{ old('phone_code',$customer->phone_code) === $country['dial_code'] ? 'selected' : '' }}>
+                                            {{ $country['name'] }} ({{ $country['dial_code'] }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                        </div>
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <label class="form-label">Phone Number</label>
-                                <input type="text" name="phone" class="form-control"
+                                <input id="phone" type="text" name="phone" class="form-control"
                                        value="{{ old('phone', $customer->phone) }}"
                                        placeholder="+91 98765 43210">
                             </div>
@@ -132,5 +144,22 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const phoneCodeSelect = document.getElementById('phone_code');
+        const phoneInput = document.getElementById('phone');
 
+        phoneCodeSelect.addEventListener('change', function () {
+            const code = this.value;
+
+            // Remove existing country code if present
+            const cleanedNumber = phoneInput.value.replace(/^\+\d+\s*/, '');
+
+            // Set new country code
+            phoneInput.value = code + ' ' + cleanedNumber;
+
+            phoneInput.focus();
+        });
+    });
+</script>
 @endsection

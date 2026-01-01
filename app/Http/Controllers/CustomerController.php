@@ -40,17 +40,29 @@ class CustomerController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:customer,email',
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string|max:500',
-            'city' => 'required|string|max:100',
-            'state' => 'required|string|max:100',
-            'zip' => 'required|string|max:20',
-            'country' => 'required|string|max:100',
-            'active' => 'required|boolean',
-        ]);
+        $request->validate(
+            [
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:customer,email',
+                'phone_code' => 'required|string|max:10',
+                'phone' => [
+                    'required',
+                    'string',
+                    'regex:/^\+\d{1,4}(\s\d{6,20}|\d{6,20})$/',
+                    'phone:' . $request->phone_code,
+                ],
+                'address' => 'required|string|max:500',
+                'city' => 'required|string|max:100',
+                'state' => 'required|string|max:100',
+                'zip' => 'required|string|max:20',
+                'country' => 'required|string|max:100',
+                'active' => 'required|boolean',
+            ],[
+                'phone.required' => 'Phone number is required.',
+                'phone.regex' => 'Use format +91 phone or +919876543210',
+                'phone.phone' => 'Invalid phone number for selected country.',
+            ]
+        );
 
         DB::beginTransaction();
 
@@ -144,28 +156,38 @@ class CustomerController extends Controller
 
     public function update(Request $request, $id)
     {
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:customer,email,' . $id,
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string|max:500',
-            'city' => 'required|string|max:100',
-            'state' => 'required|string|max:100',
-            'zip' => 'required|string|max:20',
-            'country' => 'required|string|max:100',
-            'active' => 'required|boolean',
-        ]);
-
-
+        $request->validate(
+            [
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:customer,email,' . $id,
+                'phone_code' => 'required|string|max:10',
+                'phone' => [
+                    'required',
+                    'string',
+                    'regex:/^\+\d{1,4}(\s\d{6,20}|\d{6,20})$/',
+                    'phone:' . $request->phone_code,
+                ],
+                'address' => 'required|string|max:500',
+                'city' => 'required|string|max:100',
+                'state' => 'required|string|max:100',
+                'zip' => 'required|string|max:20',
+                'country' => 'required|string|max:100',
+                'active' => 'required|boolean',
+            ],
+            [
+                'phone.required' => 'Phone number is required.',
+                'phone.regex' => 'Use format +91 phone or +919876543210',
+                'phone.phone' => 'Invalid phone number for selected country.',
+            ]
+        );
         DB::beginTransaction();
-
         try {
             $customer = Customer::findOrFail($id);
             $customer->update([
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
+                'phone_code' => $request->phone_code,
                 'active' => $request->active ?? 1,
             ]);
 
